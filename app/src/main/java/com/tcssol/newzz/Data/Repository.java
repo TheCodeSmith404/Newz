@@ -31,12 +31,12 @@ public class Repository {
     }
 
     public void getTopHeadlines(String countryCode, final OnArticlesFetchedListener listener) {
-        Call<ResponseWrapper> call = apiService.getTopHeadlines(countryCode,"060d499abb00497ba27e0e487c2a98a4");
+        Call<ResponseWrapper> call = apiService.getTopHeadlines(countryCode,"06");
         executeCall(call, listener);
     }
 
     public void getEverything(String query,String fromDate,String sortBy, final OnArticlesFetchedListener listener) {
-        Call<ResponseWrapper> call = apiService.getEverything(query,fromDate,sortBy,"060d499abb00497ba27e0e487c2a98a4");
+        Call<ResponseWrapper> call = apiService.getEverything(query,fromDate,sortBy,"06");
         Log.d("Load Data","Getting Everything");
         executeCall(call, listener);
     }
