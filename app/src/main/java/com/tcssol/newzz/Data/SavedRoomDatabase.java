@@ -19,7 +19,7 @@ import java.util.concurrent.Executors;
 @TypeConverters(Converters.class)
 public abstract class SavedRoomDatabase extends RoomDatabase {
     public static final int NUMBER_OF_THREADS=4;
-    public static final String DATABASE_NAME="saved_database";
+    public static final String DATABASE_NAME="saved_database_new";
     private static volatile SavedRoomDatabase INSTANCE;
     public static final ExecutorService databaseWriterExecutor
             = Executors.newFixedThreadPool(NUMBER_OF_THREADS);

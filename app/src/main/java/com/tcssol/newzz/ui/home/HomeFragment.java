@@ -1,15 +1,17 @@
 package com.tcssol.newzz.ui.home;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -29,6 +31,7 @@ import com.tcssol.newzz.Model.NewsAdapter;
 import com.tcssol.newzz.Model.SharedViewModel;
 import com.tcssol.newzz.databinding.FragmentHomeBinding;
 import com.tcssol.newzz.databinding.SelectCategoryBinding;
+import com.tcssol.newzz.ui.BrowseArticle;
 import com.tcssol.newzz.ui.SelectCategory;
 
 import java.time.LocalDate;
@@ -36,7 +39,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class HomeFragment extends Fragment implements Repository.OnArticlesFetchedListener , NewItemClickListner {
+public class HomeFragment extends Fragment implements Repository.OnArticlesFetchedListener , NewItemClickListner{
 
     private FragmentHomeBinding binding;
     private SelectCategoryBinding bindingCategory;
@@ -47,7 +50,15 @@ public class HomeFragment extends Fragment implements Repository.OnArticlesFetch
     private NewsAdapter adapter;
     private Repository repository;
     private ProgressBar progressBar;
+    private TextView textView;
     private ActivityResultLauncher<Intent> someActivityResultLauncher;
+    public String langauage="en";
+    public String country="IN";
+    public String category="Top Headlines";
+    public Button retry;
+    public boolean[] flipFlops=new boolean[]{false,false,false};
+
+//    public SharedViewModel sharedViewModel=new SharedViewModel();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -69,21 +80,21 @@ public class HomeFragment extends Fragment implements Repository.OnArticlesFetch
 
 
         View constraintLayout=bindingCategory.fragmentSelectCategory;
-//        bottomSheetBehavior = BottomSheetBehavior.from(constraintLayout);
-//        bottomSheetBehavior.setPeekHeight(BottomSheetBehavior.STATE_HIDDEN);
-//        DisplayMetrics displayMetrics = new DisplayMetrics();
-//        getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-//        int screenHeight = displayMetrics.heightPixels;
-//        int maxHeight = (int) (screenHeight * 0.50);
-//        bottomSheetBehavior.setMaxHeight(maxHeight);
         Repository.OnArticlesFetchedListener fetchedListener=this;
+        retry=binding.retryButton;
+        retry.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fetchArticles(category);
+            }
+        });
         RadioButton button=binding.radioButton5;
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Bundle bundle=new Bundle();
                 ArrayList<String> stringData=new ArrayList<>();
-                String[] categories = new String[]{"Politics", "Business", "Finance", "Health", "Science", "Environment", "Education", "LifeStyle", "Art", "Travel", "Fashion", "Food"};
+                String[] categories = new String[]{"Tech","World","Finance","Business","Economics","Beauty","Travel","Music","Food","Science","Gaming","Energy"};
                 Arrays.sort(categories);
                 stringData.addAll(Arrays.asList(categories));
                 bundle.putStringArrayList("items",stringData);
@@ -98,15 +109,17 @@ public class HomeFragment extends Fragment implements Repository.OnArticlesFetch
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 RadioButton button=group.findViewById(checkedId);
                 if(button.getText().toString().equals("Top HeadLines")){
-                    repository.getTopHeadlines("in",fetchedListener);
-                    progressBar.setVisibility(View.VISIBLE);
+                    SharedViewModel.setShowCategory("Top HeadLines");
+
                 }else if(button.getText().toString().equals("Show All")){
 
+
                 }else{
-                    SharedViewModel.setShowCategory(button.getText().toString());
+                    SharedViewModel.setShowCategory(button.getText().toString().toLowerCase());
                 }
             }
         });
+        textView=binding.textViewError;
 
         recyclerView = binding.homeRecyleView;
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -115,13 +128,50 @@ public class HomeFragment extends Fragment implements Repository.OnArticlesFetch
         repository = new Repository();
         Log.d("Load Data","Initialized Repository");
         LocalDate date=LocalDate.now().minusMonths(1);
-        repository.getEverything("Sports", String.valueOf(date),"popularity",this);
+        repository.getTopHeadlines(new String[]{langauage},new String[]{country},this);
         SharedViewModel.getShowCategory().observe(getActivity(),data->{
-            repository.getEverything(data, String.valueOf(date),"popularity",this);
-            progressBar.setVisibility(View.VISIBLE);
+            category = data;
+            if(flipFlops[0]) {
+                if (data.equals("Top HeadLines")) {
+                    repository.getTopHeadlines(new String[]{langauage}, new String[]{country}, this);
+                } else {
+                    repository.getEverything("*", new String[]{langauage}, new String[]{country}, data, this);
+                }
+            }else{
+                flipFlops[0]=true;
+            }
+        });
+        SharedViewModel.getCountry().observe(getActivity(),data->{
+            country = data;
+            if(flipFlops[1]) {
+                country = data;
+                fetchArticles(category);
+            }else{
+                flipFlops[1]=true;
+            }
+        });
+        SharedViewModel.getLanguage().observe(getActivity(),data->{
+            langauage=data;
+            if(flipFlops[2]) {
+                fetchArticles(category);
+            }else {
+                flipFlops[2]=true;
+            }
         });
 
+
         return root;
+    }
+    public void fetchArticles(String data){
+        textView.setVisibility(View.GONE);
+        retry.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.GONE);
+        if(data.equals("Top HeadLines")){
+            repository.getTopHeadlines(new String[]{langauage},new String[]{country},this);
+        }else {
+            repository.getEverything("*", new String[]{langauage}, new String[]{country}, data, this);
+        }
     }
 
     @Override
@@ -134,26 +184,31 @@ public class HomeFragment extends Fragment implements Repository.OnArticlesFetch
     public void onArticlesFetched(List<News> articles) {
         // Update the UI with the fetched articles
         progressBar.setVisibility(View.GONE);
+        textView.setVisibility(View.GONE);
+        retry.setVisibility(View.GONE);
         adapter = new NewsAdapter(articles,getContext(),1,this);
         recyclerView.setAdapter(adapter);
+        recyclerView.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void onError(String errorMessage) {
         // Handle errors
         progressBar.setVisibility(View.GONE);
+        textView.setVisibility(View.VISIBLE);
+        textView.setText(errorMessage);
+        retry.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.GONE);
+
+        Log.d("Error_Getting Data",errorMessage);
+
     }
 
     @Override
-    public void OpenArticle(String link) {
-        Uri webpage = Uri.parse(link);
-        Log.d("Open Browser","Click Registered");
-        Intent i = new Intent(Intent.ACTION_VIEW);
-        i.setData(webpage);
-        startActivity(i);
-//        Intent showArticle=new Intent(getActivity(), BrowseArticle.class);
-//        showArticle.putExtra("Url",link);
-//        someActivityResultLauncher.launch(showArticle);
+    public void OpenArticle(News news) {
+        Intent showArticle=new Intent(getActivity(), BrowseArticle.class);
+        showArticle.putExtra("News",news);
+        someActivityResultLauncher.launch(showArticle);
 
     }
 
@@ -171,6 +226,7 @@ public class HomeFragment extends Fragment implements Repository.OnArticlesFetch
     @Override
     public void saveArticle(News news) {
         SavedViewModel.insert(news);
+        Toast.makeText(getContext(),"Saved",Toast.LENGTH_SHORT).show();
         Log.d("Saved","Clicked Save");
     }
 
@@ -179,7 +235,12 @@ public class HomeFragment extends Fragment implements Repository.OnArticlesFetch
 
     }
 
+
     private void showSelectCategories() {
         selectCategory.show(getActivity().getSupportFragmentManager(),selectCategory.getTag());
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 }

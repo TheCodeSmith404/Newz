@@ -1,21 +1,19 @@
 package com.tcssol.newzz.Model;
-import java.util.List;
+
 import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
 
 public class ResponseWrapper {
     @SerializedName("status")
     private String status;
 
-    @SerializedName("totalResults")
-    private int totalResults;
-
     @SerializedName("articles")
-    private List<News> news;
+    private List<News> articles;
 
-    public ResponseWrapper(String status, int totalResults, List<News> news) {
+    public ResponseWrapper(String status, List<News> articles) {
         this.status = status;
-        this.totalResults = totalResults;
-        this.news = news;
+        this.articles = articles;
     }
 
     public String getStatus() {
@@ -26,19 +24,11 @@ public class ResponseWrapper {
         this.status = status;
     }
 
-    public int getTotalResults() {
-        return totalResults;
+    public List<News> getArticles() {
+        return articles;
     }
 
-    public void setTotalResults(int totalResults) {
-        this.totalResults = totalResults;
-    }
-
-    public List<News> getNews() {
-        return news;
-    }
-
-    public void setNews(List<News> news) {
-        this.news = news;
+    public void setArticles(List<News> articles) {
+        this.articles = articles;
     }
 }

@@ -1,7 +1,6 @@
 package com.tcssol.newzz.ui.notifications;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -63,12 +62,12 @@ public class NotificationsFragment extends Fragment implements NewItemClickListn
     }
 
     @Override
-    public void OpenArticle(String link) {
-        Uri webpage = Uri.parse(link);
-        Log.d("Open Browser","Click Registered");
-        Intent i = new Intent(Intent.ACTION_VIEW);
-        i.setData(webpage);
-        startActivity(i);
+    public void OpenArticle(News news) {
+//        Uri webpage = Uri.parse(link);
+//        Log.d("Open Browser","Click Registered");
+//        Intent i = new Intent(Intent.ACTION_VIEW);
+//        i.setData(webpage);
+//        startActivity(i);
 //        Intent showArticle=new Intent(getActivity(), BrowseArticle.class);
 //        showArticle.putExtra("Url",link);
 //        someActivityResultLauncher.launch(showArticle);
@@ -92,4 +91,5 @@ public class NotificationsFragment extends Fragment implements NewItemClickListn
     public void deleteArticle(News news) {
         SavedViewModel.delete(news);
     }
+
 }

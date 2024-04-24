@@ -2,7 +2,6 @@ package com.tcssol.newzz.ui.dashboard;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -30,6 +29,7 @@ import com.tcssol.newzz.Data.SavedViewModel;
 import com.tcssol.newzz.Model.NewItemClickListner;
 import com.tcssol.newzz.Model.News;
 import com.tcssol.newzz.Model.NewsAdapter;
+import com.tcssol.newzz.Model.SharedViewModel;
 import com.tcssol.newzz.databinding.FragmentDashboardBinding;
 
 import java.time.LocalDate;
@@ -77,7 +77,7 @@ public class DashboardFragment extends Fragment implements Repository.OnArticles
                 if (actionId == EditorInfo.IME_ACTION_SEARCH || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
                     hideKeyboard();
                     progressBar.setVisibility(View.VISIBLE);
-                    repository.getEverything(search.getText().toString(),String.valueOf(date),"popularity",listener);
+                    repository.getEverything(search.getText().toString(), new String[]{SharedViewModel.getLanguageText()},new String[]{SharedViewModel.getCountryText()},"news",listener);
                     return true; // Consume the event
                 }
                 return false;
@@ -107,11 +107,11 @@ public class DashboardFragment extends Fragment implements Repository.OnArticles
     }
 
     @Override
-    public void OpenArticle(String link) {
-        Uri webpage = Uri.parse(link);
+    public void OpenArticle(News news) {
+
         Log.d("Open Browser","Click Registered");
         Intent i = new Intent(Intent.ACTION_VIEW);
-        i.setData(webpage);
+//        i.putExtra("News",news);
         startActivity(i);
 //        Intent showArticle=new Intent(getActivity(), BrowseArticle.class);
 //        showArticle.putExtra("Url",link);
@@ -136,6 +136,8 @@ public class DashboardFragment extends Fragment implements Repository.OnArticles
     @Override
     public void deleteArticle(News news) {
     }
+
+
 
     private void hideKeyboard() {
         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);

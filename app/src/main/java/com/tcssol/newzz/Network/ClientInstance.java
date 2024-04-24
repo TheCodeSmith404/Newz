@@ -4,7 +4,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ClientInstance {
     private static Retrofit retrofit;
-    private static final String BASE_URL = "";
+    private static final String BASE_URL = "https://api.newscatcherapi.com/v2/";
 
     public static Retrofit getRetrofitInstance() {
         if (retrofit == null) {

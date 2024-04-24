@@ -1,31 +1,79 @@
 package com.tcssol.newzz.Model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.google.gson.annotations.SerializedName;
 @Entity(tableName = "saved_articles")
-public class News{
+public class News implements Parcelable {
     @PrimaryKey(autoGenerate = true)
     private long id;
-    @SerializedName("source")
-    private Source source;
     @SerializedName("title")
     private String title;
-    @SerializedName("url")
-    private String url;
-    @SerializedName("urlToImage")
-    private String urlToImage;
-    @SerializedName("publishedAt")
-    private String publishedAt;
 
-    public News(Source source, String title, String url, String urlToImage, String publishedAt) {
-        this.source = source;
+    @SerializedName("published_date")
+    private String publishedDate;
+
+    @SerializedName("link")
+    private String link;
+
+    @SerializedName("clean_url")
+    private String cleanUrl;
+
+    @SerializedName("summary")
+    private String summary;
+
+    @SerializedName("media")
+    private String media;
+
+    public News(String title, String publishedDate, String link, String cleanUrl, String summary, String media) {
         this.title = title;
-        this.url = url;
-        this.urlToImage = urlToImage;
-        this.publishedAt = publishedAt;
+        this.publishedDate = publishedDate;
+        this.link = link;
+        this.cleanUrl = cleanUrl;
+        this.summary = summary;
+        this.media = media;
     }
+    @Ignore
+    protected News(Parcel parcel){
+        title =parcel.readString();
+        publishedDate = parcel.readString();
+        link = parcel.readString();
+        cleanUrl = parcel.readString();
+        summary = parcel.readString();
+        media = parcel.readString();
+
+    }
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeString(title);
+        dest.writeString(publishedDate);
+        dest.writeString(link);
+        dest.writeString(cleanUrl);
+        dest.writeString(summary);
+        dest.writeString(media);
+
+    }
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+    public static final Creator<News> CREATOR = new Creator<News>() {
+        @Override
+        public News createFromParcel(Parcel in) {
+            return new News(in);
+        }
+
+        @Override
+        public News[] newArray(int size) {
+            return new News[size];
+        }
+    };
 
     public long getId() {
         return id;
@@ -35,43 +83,28 @@ public class News{
         this.id = id;
     }
 
-    public Source getSource() {
-        return source;
-    }
-
-    public void setSource(Source source) {
-        this.source = source;
-    }
-
     public String getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public String getPublishedDate() {
+        return publishedDate;
     }
 
-    public String getUrl() {
-        return url;
+    public String getLink() {
+        return link;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public String getCleanUrl() {
+        return cleanUrl;
     }
 
-    public String getUrlToImage() {
-        return urlToImage;
+    public String getSummary() {
+        return summary;
     }
 
-    public void setUrlToImage(String urlToImage) {
-        this.urlToImage = urlToImage;
+    public String getMedia() {
+        return media;
     }
 
-    public String getPublishedAt() {
-        return publishedAt;
-    }
-
-    public void setPublishedAt(String publishedAt) {
-        this.publishedAt = publishedAt;
-    }
 }

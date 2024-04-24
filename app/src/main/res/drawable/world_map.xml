@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="240dp"
+    android:height="120dp"
+    android:viewportWidth="100"
+    android:viewportHeight="50">
+
+    <!-- Background -->
+    <path
+        android:pathData="M0,0 L100,0 L100,50 L0,50 Z"
+        android:fillColor="#FFFFFF"/>
+
+    <!-- Continents -->
+    <path
+        android:pathData="M10,20 L30,20 L30,40 L10,40 Z"
+        android:fillColor="#FF0000"/>
+    <!-- Add more paths for other continents or countries -->
+
+</vector>

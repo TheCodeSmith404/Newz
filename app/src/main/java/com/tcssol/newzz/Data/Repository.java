@@ -10,6 +10,7 @@ import com.tcssol.newzz.Model.ResponseWrapper;
 import com.tcssol.newzz.Network.ApiService;
 import com.tcssol.newzz.Network.ClientInstance;
 
+import java.io.IOException;
 import java.util.List;
 
 import retrofit2.Call;
@@ -30,13 +31,13 @@ public class Repository {
         apiService = ClientInstance.getRetrofitInstance().create(ApiService.class);
     }
 
-    public void getTopHeadlines(String countryCode, final OnArticlesFetchedListener listener) {
-        Call<ResponseWrapper> call = apiService.getTopHeadlines(countryCode,"06");
+    public void getTopHeadlines(String[] lang,String[] countryCode, final OnArticlesFetchedListener listener) {
+        Call<ResponseWrapper> call = apiService.getTopHeadlines("24h",lang,countryCode);
         executeCall(call, listener);
     }
 
-    public void getEverything(String query,String fromDate,String sortBy, final OnArticlesFetchedListener listener) {
-        Call<ResponseWrapper> call = apiService.getEverything(query,fromDate,sortBy,"06");
+    public void getEverything(String query,String[] language,String[] country,String topic, final OnArticlesFetchedListener listener) {
+        Call<ResponseWrapper> call = apiService.getEverything(query,language,country,topic);
         Log.d("Load Data","Getting Everything");
         executeCall(call, listener);
     }
@@ -49,16 +50,23 @@ public class Repository {
                 if (response.isSuccessful()) {
                     Log.d("Load Data","Success");
                     ResponseWrapper responseWrapper = response.body();
-                    listener.onArticlesFetched(responseWrapper.getNews());
+                    listener.onArticlesFetched(responseWrapper.getArticles());
                 } else {
+                    Log.d("Load Data","Failed "+response.code()+response.message());
                     Log.d("Load Data","Failed "+response.code()+response.errorBody().toString());
-                    listener.onError("Failed to fetch articles");
+                    String errorText;
+                    try {
+                        errorText=response.errorBody().string();
+                    } catch (IOException e) {
+                        errorText="UnKnown Error";
+                    }
+                    listener.onError(errorText);
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseWrapper> call, Throwable t) {
-                Log.d("Load Data","Network Error");
+                Log.d("Load Data","Network Error"+t.getMessage());
                 listener.onError("Network error: " + t.getMessage());
             }
         });

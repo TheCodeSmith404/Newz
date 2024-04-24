@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -24,8 +25,7 @@ import com.tcssol.newzz.databinding.NewsItemBinding;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
@@ -43,7 +43,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
         this.clickListner=clickListner;
         this.viewType=viewType;
         Log.d("Saved","Initializing Adapter");
-        Log.d("Saved",String.valueOf(allNews.size()));
+//        Log.d("Saved",String.valueOf(allNews.size()));
     }
 
     @NonNull
@@ -58,22 +58,24 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull NewsAdapter.ViewHolder holder, int position) {
         News news=allNews.get(position);
         holder.title.setText(news.getTitle());
-        ZonedDateTime zonedDateTime = ZonedDateTime.parse(news.getPublishedAt());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-        LocalDateTime localDateTimeUTC = zonedDateTime.toLocalDateTime();
-
-        LocalDateTime publishedAt = localDateTimeUTC.atZone(ZoneId.systemDefault()).toLocalDateTime();
+// Parse the published date string into a LocalDateTime object using the formatter
+        LocalDateTime publishedAt = LocalDateTime.parse(news.getPublishedDate(), formatter);
         Duration duration=Duration.between(publishedAt,current);
         String hours=(int)duration.toHours()+"h";
         if(duration.toHours()>24){
             hours=(int)duration.toDays()+"d";
         }
         holder.date.setText(hours);
-        holder.source.setText(news.getSource().getName());
+        String src=news.getCleanUrl();
+        String sub=src.substring(0,src.indexOf('.'));
+        holder.source.setText(String.format("%s%s", String.valueOf(src.charAt(0)).toUpperCase(), src.substring(1, sub.length())));
+
         ImageView imageView=holder.image;
 
 
-        String imageUrl=news.getUrlToImage();
+        String imageUrl=news.getMedia();
         Glide.with(context)
                 .load(imageUrl)
                 .apply(new RequestOptions()
@@ -103,16 +105,19 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return allNews.size();
+        if(allNews!=null)
+            return allNews.size();
+        else 
+            return 0;
     }
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private ImageView image;
         private TextView title;
         private TextView source;
         private TextView date;
-        private ImageView save;
-        private ImageView share;
-        private ImageView delete;
+        private ImageButton save;
+        private ImageButton share;
+        private ImageButton delete;
         private NewItemClickListner click;
         public ViewHolder(@NonNull NewsItemBinding binding,int viewType,NewItemClickListner clickListner) {
             super(binding.getRoot());
@@ -140,14 +145,14 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
             int id=v.getId();
             News news=allNews.get(getAdapterPosition());
             if(id==R.id.imageButtonShare){
-                click.shareArticle(news.getUrl());
+                click.shareArticle(news.getLink());
             }else if(id==R.id.imageButtonSave){
                 click.saveArticle(news);
             }else if(id==R.id.imageButtonDelete){
                 click.deleteArticle(news);
             }
             else{
-                click.OpenArticle(news.getUrl());
+                click.OpenArticle(news);
             }
 
 
