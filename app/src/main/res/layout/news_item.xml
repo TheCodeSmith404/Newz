@@ -4,11 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginLeft="16dp"
-    android:layout_marginTop="2dp"
-    android:layout_marginRight="16dp"
+    android:layout_marginLeft="8dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginRight="8dp"
     android:padding="4dp"
-    app:cardCornerRadius="10dp">
+    app:cardCornerRadius="10dp"
+    app:cardElevation="4dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -16,12 +17,23 @@
         android:padding="2dp"
         android:paddingLeft="6dp">
 
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:layout_marginBottom="2dp"
+            android:text="·"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/newsItemSrc" />
+
         <androidx.cardview.widget.CardView
             android:id="@+id/cardView"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            app:cardCornerRadius="10dp"
+            android:layout_marginEnd="4dp"
+            app:cardCornerRadius="4dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -37,8 +49,8 @@
             android:id="@+id/imageButtonShare"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:layout_marginTop="4dp"
-            android:layout_marginEnd="10dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="4dp"
             android:background="@android:color/transparent"
             android:src="@drawable/baseline_share_24"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -49,8 +61,8 @@
             android:id="@+id/imageButtonSave"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:layout_marginTop="4dp"
-            android:layout_marginEnd="20dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="24dp"
             android:layout_marginBottom="2dp"
             android:background="@android:color/transparent"
             android:src="@drawable/round_save_24"
@@ -64,6 +76,7 @@
             android:layout_height="80dp"
             android:layout_marginStart="4dp"
             android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
             android:ellipsize="marquee"
             android:gravity="fill"
             android:maxLines="3"
@@ -75,15 +88,13 @@
 
         <TextView
             android:id="@+id/newsItemSrc"
-            android:layout_width="100dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_marginBottom="2dp"
             android:singleLine="true"
             android:text="BBC news"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/newsitemDate"
-            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -91,11 +102,11 @@
             android:id="@+id/newsitemDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
+            android:layout_marginStart="2dp"
             android:layout_marginBottom="2dp"
             android:text="12-05-2024"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/newsItemSrc" />
+            app:layout_constraintStart_toEndOf="@+id/textView2" />
 
         <ImageButton
             android:id="@+id/imageButtonDelete"
