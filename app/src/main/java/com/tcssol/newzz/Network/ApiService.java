@@ -8,7 +8,7 @@ import retrofit2.http.Headers;
 import retrofit2.http.Query;
 
 public interface ApiService {
-
+    @Headers("x-api-key:Your-Key-Here")
     @GET("search")
     Call<ResponseWrapper> getEverything(
             @Query("q") String query,
@@ -16,7 +16,7 @@ public interface ApiService {
             @Query("countries") String[] countries,
             @Query("topic") String topic
     );
-
+    @Headers("x-api-key:Your-Key-Here")
     @GET("latest_headlines")
     Call<ResponseWrapper> getTopHeadlines(
             @Query("when") String when,
