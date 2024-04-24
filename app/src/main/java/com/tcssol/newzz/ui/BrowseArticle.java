@@ -20,6 +20,9 @@ import com.tcssol.newzz.Model.News;
 import com.tcssol.newzz.R;
 import com.tcssol.newzz.databinding.ActivityBrowseArticleBinding;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class BrowseArticle extends AppCompatActivity {
     private ActivityBrowseArticleBinding binding;
     private TextView title;
@@ -65,7 +68,10 @@ public class BrowseArticle extends AppCompatActivity {
                 Log.d("Browser", news.getTitle());
                 title.setText(news.getTitle());
                 by.setText(news.getCleanUrl());
-                date.setText(news.getPublishedDate());
+                LocalDateTime dateTime = LocalDateTime.parse(news.getPublishedDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a dd-MM-yyyy");
+                String formattedDateTime = dateTime.format(formatter);
+                date.setText(formattedDateTime);
                 content.setText(news.getSummary());
                 String imagelink = news.getMedia();
 
